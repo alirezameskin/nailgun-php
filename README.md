@@ -22,6 +22,9 @@ $client = new Nailgun\Client();
 $client->connect('127.0.0.1', 2113);
 
 $result = $client->run("com.facebook.nailgun.examples.HelloWorld");
+$client->disconnect();
+
+print 'Exit Code : ' . $result->getExitCode() . PHP_EOL;
 
 if ($result->successful()) {
     print $result->getOutput();
@@ -42,7 +45,10 @@ $options = [
     'output' => new \Nailgun\Connection\Stream(fopen("php://stdout", "w")),
     'error'  => new \Nailgun\Connection\Stream(fopen("php://stderr", "w")),
 ];
-$client->run("com.facebook.nailgun.examples.HelloWorld", $options);
+$result = $client->run("com.facebook.nailgun.examples.ThreadTest", $options);
+$client->disconnect();
+
+print 'Exit Code : ' . $result->getExitCode() . PHP_EOL;
 
 ```
 
