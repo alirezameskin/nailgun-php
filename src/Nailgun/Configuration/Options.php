@@ -2,6 +2,9 @@
 
 namespace Nailgun\Configuration;
 
+use Nailgun\Connection\Stream;
+use Psr\Http\Message\StreamInterface;
+
 class Options implements OptionsInterface
 {
     /**
@@ -13,6 +16,16 @@ class Options implements OptionsInterface
      * @var string
      */
     private $currentDirectory;
+
+    /**
+     * @var StreamInterface
+     */
+    private $outputStream;
+
+    /**
+     * @var StreamInterface
+     */
+    private $errorStream;
 
     /**
      * @param array $options
@@ -41,10 +54,30 @@ class Options implements OptionsInterface
 
             $this->currentDirectory = $cwd;
         }
+
+        if (isset($options['output'])) {
+            if (!$options['output'] instanceof StreamInterface) {
+                throw new \InvalidArgumentException("Output stream should be instance of " . StreamInterface::class);
+            }
+
+            $this->outputStream = $options['output'];
+        } else {
+            $this->outputStream = $this->createTempStream();
+        }
+
+        if (isset($options['error'])) {
+            if (!$options['error'] instanceof StreamInterface) {
+                throw new \InvalidArgumentException("Error stream should be instance of " . StreamInterface::class);
+            }
+
+            $this->errorStream = $options['error'];
+        } else {
+            $this->errorStream = $this->createTempStream();
+        }
     }
 
     /**
-     * @return string[]
+     * {@inheritDoc}
      */
     public function getEnvironments(): array
     {
@@ -52,10 +85,41 @@ class Options implements OptionsInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getCurrentDirectory(): string
     {
         return $this->currentDirectory;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOutputStream(): StreamInterface
+    {
+        return $this->outputStream;
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    public function getErrorStream(): StreamInterface
+    {
+        return $this->errorStream;
+    }
+
+    /**
+     * @return StreamInterface
+     */
+    protected function createTempStream(): StreamInterface
+    {
+        $temp  = fopen("php://temp", "rw");
+
+        if (false === $temp) {
+            throw new \RuntimeException("Can not create a temporary stream (php://stream)");
+        }
+
+        return new Stream($temp);
     }
 }

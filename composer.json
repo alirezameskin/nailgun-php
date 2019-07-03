@@ -1,8 +1,9 @@
 {
-    "name": "alireza/nailgun-php",
+    "name": "meskin/nailgun-php",
     "description": "A PHP Nailgun client",
     "type": "library",
     "license": "Apache-2.0",
+    "version": "0.0.1",
     "authors": [
         {
             "name": "Alireza Meskin",
@@ -11,7 +12,8 @@
     ],
     "require": {
         "php": "^7.0",
-        "ext-sockets": "*"
+        "ext-sockets": "*",
+        "psr/http-message": "^1.0"
     },
     "config": {
         "sort-packages": true

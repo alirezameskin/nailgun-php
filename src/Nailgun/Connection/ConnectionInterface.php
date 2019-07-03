@@ -3,6 +3,7 @@
 namespace Nailgun\Connection;
 
 use Nailgun\Protocol\Message;
+use Psr\Http\Message\StreamInterface;
 
 interface ConnectionInterface
 {
@@ -30,9 +31,7 @@ interface ConnectionInterface
     public function write(Message $message);
 
     /**
-     * @param int $length
-     *
-     * @return string
+     * @return StreamInterface
      */
-    public function read(int $length): string;
+    public function stream(): StreamInterface;
 }

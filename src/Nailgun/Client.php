@@ -37,10 +37,10 @@ class Client implements ClientInterface
     /**
      * {@inheritDoc}
      */
-    public function connect(string $host = '127.0.0.1', int $port = 2113)
+    public function connect(string $host = '127.0.0.1', int $port = 2113, int $timeout = 30)
     {
         if (null === $this->connection) {
-            $this->connection = $this->connectionFactory->create($host, $port);
+            $this->connection = $this->connectionFactory->create($host, $port, $timeout);
         }
 
         $this->connection->connect();
@@ -70,7 +70,7 @@ class Client implements ClientInterface
         $this->connection->write(Message::directory($options->getCurrentDirectory()));
         $this->connection->write(Message::command($command));
 
-        $result = $this->parseResult();
+        $result = $this->parseResult($options);
 
         return $result;
     }
@@ -95,37 +95,49 @@ class Client implements ClientInterface
     }
 
     /**
+     * @param OptionsInterface $options
+     *
      * @return Result
      */
-    private function parseResult(): Result
+    private function parseResult(OptionsInterface $options): Result
     {
-        $output   = "";
-        $error    = "";
+        $output   = $options->getOutputStream();
+        $error    = $options->getErrorStream();
         $exitCode = 0;
 
-        while (true) {
-            $buffer = $this->connection->read(Header::CHUNK_HEADER_LENGTH);
+        $stream = $this->connection->stream();
+        $offset = 0;
+
+        while (!$stream->eof()) {
+            $stream->seek($offset);
+
+            $buffer = $stream->read(Header::CHUNK_HEADER_LENGTH);
             $header = Header::decode($buffer);
 
             if ($header->getLength() <= 0) {
                 continue;
             }
 
+            $offset += Header::CHUNK_HEADER_LENGTH;
+            $stream->seek($offset);
+
             switch ($header->getType()) {
                 case Header::STD_ERR:
-                    $error .= $this->connection->read($header->getLength());
+                    $error->write($stream->read($header->getLength()));
                     break;
 
                 case Header::STD_OUT:
-                    $output .= $this->connection->read($header->getLength());
+                    $output->write($stream->read($header->getLength()));
                     break;
 
                 case Header::EXIT:
-                    $exitCode = (int) $this->connection->read($header->getLength());
+                    $exitCode = (int) $stream->read($header->getLength());
 
                     return new Result($exitCode, $output, $error);
                     break;
             }
+
+            $offset += $header->getLength();
         }
 
         return new Result($exitCode, $output, $error);

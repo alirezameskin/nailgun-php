@@ -2,14 +2,16 @@
 
 namespace Nailgun\Connection;
 
+use Nailgun\Exception\ConnectionException;
 use Nailgun\Protocol\Message;
+use Psr\Http\Message\StreamInterface;
 
 class SocketConnection implements ConnectionInterface
 {
     /**
      * @var resource
      */
-    private $socket;
+    public $socket;
 
     /**
      * @var string
@@ -22,13 +24,20 @@ class SocketConnection implements ConnectionInterface
     private $port;
 
     /**
+     * @var int
+     */
+    private $timeout;
+
+    /**
      * @param string $host
      * @param int    $port
+     * @param int    $timeout
      */
-    public function __construct(string $host, int $port)
+    public function __construct(string $host, int $port, int $timeout)
     {
         $this->host = $host;
         $this->port = $port;
+        $this->timeout = $timeout;
     }
 
     /**
@@ -36,15 +45,19 @@ class SocketConnection implements ConnectionInterface
      */
     public function connect()
     {
-        $socket = socket_create(AF_INET, SOCK_STREAM, 0);
+        $socket = stream_socket_client(
+            "tcp://" . $this->host . ':' . $this->port,
+            $errno,
+            $errstr,
+            $this->timeout,
+            STREAM_CLIENT_CONNECT
+        );
 
         if (false === $socket) {
-            throw new \Exception("Can not Connect to socket");
+            throw new ConnectionException($errstr, $errno);
         }
 
         $this->socket = $socket;
-
-        socket_connect($this->socket, $this->host, $this->port);
     }
 
     /**
@@ -52,7 +65,7 @@ class SocketConnection implements ConnectionInterface
      */
     public function disconnect()
     {
-        socket_close($this->socket);
+        fclose($this->socket);
     }
 
     /**
@@ -62,18 +75,26 @@ class SocketConnection implements ConnectionInterface
     {
         $header = $message->getHeader();
 
-        socket_write($this->socket, $header->encode());
+        fwrite($this->socket, $header->encode());
 
         if ($header->getLength() > 0) {
-            socket_write($this->socket, $message->getMessage());
+            fwrite($this->socket, $message->getMessage());
         }
     }
 
     /**
-     * {@inheritDoc}
+     * @return StreamInterface
      */
-    public function read(int $length): string
+    public function stream(): StreamInterface
     {
-        return (string) socket_read($this->socket, 5, MSG_WAITALL);
+        $temp = fopen("php://temp", "w+");
+
+        if (false === $temp) {
+            throw new \RuntimeException("Can not create a temporary stream");
+        }
+
+        stream_copy_to_stream($this->socket, $temp);
+
+        return new Stream($temp);
     }
 }

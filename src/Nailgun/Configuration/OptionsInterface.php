@@ -2,6 +2,8 @@
 
 namespace Nailgun\Configuration;
 
+use Psr\Http\Message\StreamInterface;
+
 interface OptionsInterface
 {
     /**
@@ -13,4 +15,14 @@ interface OptionsInterface
      * @return string
      */
     public function getCurrentDirectory(): string;
+
+    /**
+     * @return StreamInterface
+     */
+    public function getOutputStream(): StreamInterface;
+
+    /**
+     * @return StreamInterface
+     */
+    public function getErrorStream(): StreamInterface;
 }

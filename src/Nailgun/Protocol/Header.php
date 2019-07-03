@@ -72,6 +72,6 @@ class Header
     {
         $extract = unpack('Nsize/ctype', $code);
 
-        return new static($extract['type'], $extract['size']);
+        return new static(chr($extract['type']), $extract['size']);
     }
 }
