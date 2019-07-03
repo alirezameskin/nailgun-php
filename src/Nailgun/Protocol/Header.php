@@ -4,20 +4,20 @@ namespace Nailgun\Protocol;
 
 class Header
 {
-    public const CHUNK_HEADER_LENGTH = 5;
+    const CHUNK_HEADER_LENGTH = 5;
 
-    public const ARGUMENT    = 'A';
-    public const COMMAND     = 'C';
-    public const CURRENT_DIR = 'D';
-    public const ENVIRONMENT = 'E';
-    public const EXIT        = 'X';
-    public const HEARTBEAT   = 'H';
-    public const LONG_ARG    = 'L';
-    public const SEND_INPUT  = 'S';
-    public const STDIN       = '0';
-    public const STD_OUT     = '1';
-    public const STD_ERR     = '2';
-    public const STD_IN_EOF  = '.';
+    const ARGUMENT    = 'A';
+    const COMMAND     = 'C';
+    const CURRENT_DIR = 'D';
+    const ENVIRONMENT = 'E';
+    const EXIT        = 'X';
+    const HEARTBEAT   = 'H';
+    const LONG_ARG    = 'L';
+    const SEND_INPUT  = 'S';
+    const STDIN       = '0';
+    const STD_OUT     = '1';
+    const STD_ERR     = '2';
+    const STD_IN_EOF  = '.';
 
     /**
      * @var string
