@@ -70,9 +70,11 @@ class Client implements ClientInterface
         $this->connection->write(Message::directory($options->getCurrentDirectory()));
         $this->connection->write(Message::command($command));
 
-        $result = $this->parseResult($options);
+        $output   = $options->getOutputStream();
+        $error    = $options->getErrorStream();
+        $exitCode = $this->connection->stream($output, $error);
 
-        return $result;
+        return new Result($exitCode, $output, $error);
     }
 
     /**
@@ -92,54 +94,5 @@ class Client implements ClientInterface
         }
 
         throw new InvalidArgumentException('Invalid type for client options.');
-    }
-
-    /**
-     * @param OptionsInterface $options
-     *
-     * @return Result
-     */
-    private function parseResult(OptionsInterface $options): Result
-    {
-        $output   = $options->getOutputStream();
-        $error    = $options->getErrorStream();
-        $exitCode = 0;
-
-        $stream = $this->connection->stream();
-        $offset = 0;
-
-        while (!$stream->eof()) {
-            $stream->seek($offset);
-
-            $buffer = $stream->read(Header::CHUNK_HEADER_LENGTH);
-            $header = Header::decode($buffer);
-
-            if ($header->getLength() <= 0) {
-                continue;
-            }
-
-            $offset += Header::CHUNK_HEADER_LENGTH;
-            $stream->seek($offset);
-
-            switch ($header->getType()) {
-                case Header::STD_ERR:
-                    $error->write($stream->read($header->getLength()));
-                    break;
-
-                case Header::STD_OUT:
-                    $output->write($stream->read($header->getLength()));
-                    break;
-
-                case Header::EXIT:
-                    $exitCode = (int) $stream->read($header->getLength());
-
-                    return new Result($exitCode, $output, $error);
-                    break;
-            }
-
-            $offset += $header->getLength();
-        }
-
-        return new Result($exitCode, $output, $error);
     }
 }

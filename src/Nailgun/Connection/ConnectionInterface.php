@@ -31,7 +31,10 @@ interface ConnectionInterface
     public function write(Message $message);
 
     /**
-     * @return StreamInterface
+     * @param StreamInterface $stdout
+     * @param StreamInterface $stderr
+     *
+     * @return int
      */
-    public function stream(): StreamInterface;
+    public function stream(StreamInterface $stdout, StreamInterface $stderr): int;
 }

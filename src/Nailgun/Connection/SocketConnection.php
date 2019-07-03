@@ -3,6 +3,7 @@
 namespace Nailgun\Connection;
 
 use Nailgun\Exception\ConnectionException;
+use Nailgun\Protocol\Header;
 use Nailgun\Protocol\Message;
 use Psr\Http\Message\StreamInterface;
 
@@ -83,18 +84,58 @@ class SocketConnection implements ConnectionInterface
     }
 
     /**
-     * @return StreamInterface
+     * {@inheritDoc}
      */
-    public function stream(): StreamInterface
+    public function stream(StreamInterface $stdout, StreamInterface $stderr): int
     {
-        $temp = fopen("php://temp", "w+");
+        do {
+            $buffer = $this->read(Header::CHUNK_HEADER_LENGTH);
+            $header = Header::decode($buffer);
 
-        if (false === $temp) {
-            throw new \RuntimeException("Can not create a temporary stream");
-        }
+            if ($header->getLength() <= 0) {
+                continue;
+            }
 
-        stream_copy_to_stream($this->socket, $temp);
+            switch ($header->getType()) {
+                case Header::STD_ERR:
+                    $stdout->write($this->read($header->getLength()));
+                    break;
 
-        return new Stream($temp);
+                case Header::STD_OUT:
+                    $stdout->write($this->read($header->getLength()));
+                    break;
+
+                case Header::EXIT:
+                    return (int) $this->read($header->getLength());
+                    break;
+            }
+
+        } while (true);
+
+        throw new \RuntimeException('Error while reading bytes from the server.');
+    }
+
+    /**
+     * @param int $length
+     *
+     * @return string
+     */
+    private function read(int $length)
+    {
+        $bytesLeft = $length;
+        $bulkData  = '';
+
+        do {
+            $chunk = fread($this->socket, $bytesLeft);
+
+            if ($chunk === false || $chunk === '') {
+                throw new \RuntimeException('Error while reading bytes from the server.');
+            }
+
+            $bulkData .= $chunk;
+            $bytesLeft = $length - strlen($bulkData);
+        } while ($bytesLeft > 0);
+
+        return $bulkData;
     }
 }
