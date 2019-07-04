@@ -8,7 +8,6 @@ use Nailgun\Configuration\OptionsInterface;
 use Nailgun\Connection\Factory;
 use Nailgun\Connection\ConnectionInterface;
 use Nailgun\Connection\FactoryInterface;
-use Nailgun\Protocol\Header;
 use Nailgun\Protocol\Message;
 use Nailgun\Protocol\Result;
 
@@ -29,6 +28,8 @@ class Client implements ClientInterface
      */
     public function __construct(FactoryInterface $factory = null)
     {
+        $this->connectionFactory = $factory;
+
         if (null === $factory) {
             $this->connectionFactory = new Factory();
         }

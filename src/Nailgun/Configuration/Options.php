@@ -2,9 +2,6 @@
 
 namespace Nailgun\Configuration;
 
-use Nailgun\Connection\Stream;
-use Psr\Http\Message\StreamInterface;
-
 class Options implements OptionsInterface
 {
     /**
@@ -18,12 +15,12 @@ class Options implements OptionsInterface
     private $currentDirectory;
 
     /**
-     * @var StreamInterface
+     * @var resource
      */
     private $outputStream;
 
     /**
-     * @var StreamInterface
+     * @var resource
      */
     private $errorStream;
 
@@ -56,23 +53,23 @@ class Options implements OptionsInterface
         }
 
         if (isset($options['output'])) {
-            if (!$options['output'] instanceof StreamInterface) {
-                throw new \InvalidArgumentException("Output stream should be instance of " . StreamInterface::class);
+            if (!is_resource($options['output'])) {
+                throw new \InvalidArgumentException("Output stream should be a valid resource");
             }
 
             $this->outputStream = $options['output'];
         } else {
-            $this->outputStream = $this->createTempStream();
+            $this->outputStream = $this->createTempResource();
         }
 
         if (isset($options['error'])) {
-            if (!$options['error'] instanceof StreamInterface) {
-                throw new \InvalidArgumentException("Error stream should be instance of " . StreamInterface::class);
+            if (!is_resource($options['error'])) {
+                throw new \InvalidArgumentException("Error stream should be a valid resource");
             }
 
             $this->errorStream = $options['error'];
         } else {
-            $this->errorStream = $this->createTempStream();
+            $this->errorStream = $this->createTempResource();
         }
     }
 
@@ -95,7 +92,7 @@ class Options implements OptionsInterface
     /**
      * {@inheritDoc}
      */
-    public function getOutputStream(): StreamInterface
+    public function getOutputStream()
     {
         return $this->outputStream;
     }
@@ -104,22 +101,22 @@ class Options implements OptionsInterface
      *
      * {@inheritDoc}
      */
-    public function getErrorStream(): StreamInterface
+    public function getErrorStream()
     {
         return $this->errorStream;
     }
 
     /**
-     * @return StreamInterface
+     * @return resource
      */
-    protected function createTempStream(): StreamInterface
+    protected function createTempResource()
     {
-        $temp  = fopen("php://temp", "rw");
+        $temp  = fopen("php://memory", "rw");
 
         if (false === $temp) {
             throw new \RuntimeException("Can not create a temporary stream (php://stream)");
         }
 
-        return new Stream($temp);
+        return $temp;
     }
 }

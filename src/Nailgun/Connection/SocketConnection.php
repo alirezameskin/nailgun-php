@@ -86,7 +86,7 @@ class SocketConnection implements ConnectionInterface
     /**
      * {@inheritDoc}
      */
-    public function stream(StreamInterface $stdout, StreamInterface $stderr): int
+    public function stream($stdout, $stderr): int
     {
         do {
             $buffer = $this->read(Header::CHUNK_HEADER_LENGTH);
@@ -98,11 +98,11 @@ class SocketConnection implements ConnectionInterface
 
             switch ($header->getType()) {
                 case Header::STD_ERR:
-                    $stdout->write($this->read($header->getLength()));
+                    fwrite($stderr, $this->read($header->getLength()));
                     break;
 
                 case Header::STD_OUT:
-                    $stdout->write($this->read($header->getLength()));
+                    fwrite($stdout, $this->read($header->getLength()));
                     break;
 
                 case Header::EXIT:
