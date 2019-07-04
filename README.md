@@ -42,8 +42,8 @@ $client = new Nailgun\Client();
 $client->connect('127.0.0.1', 2113);
 
 $options = [
-    'output' => new \Nailgun\Connection\Stream(fopen("php://stdout", "w")),
-    'error'  => new \Nailgun\Connection\Stream(fopen("php://stderr", "w")),
+    'output' => fopen("php://stdout", "w"),
+    'error'  => fopen("php://stderr", "w"),
 ];
 $result = $client->run("com.facebook.nailgun.examples.ThreadTest", $options);
 $client->disconnect();
@@ -61,8 +61,8 @@ $client = new Nailgun\Client();
 $client->connect('127.0.0.1', 2113);
 
 $options = [
-    'output'       => new \Nailgun\Connection\Stream(fopen("file:///tmp/output", "a+")),
-    'error'        => new \Nailgun\Connection\Stream(fopen("file:///tmp/error", "a+")),
+    'output'       => fopen("file:///tmp/output", "a+"),
+    'error'        => fopen("file:///tmp/error", "a+"),
     'directory'    => '/home/alireza/projects/',
     'environments' => [
         'HOME' => '/home/alireza'

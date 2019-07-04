@@ -2,8 +2,6 @@
 
 namespace Nailgun\Protocol;
 
-use Psr\Http\Message\StreamInterface;
-
 class Result
 {
     /**
@@ -12,25 +10,28 @@ class Result
     private $code;
 
     /**
-     * @var StreamInterface
+     * @var resource
      */
     private $output;
 
     /**
-     * @var StreamInterface
+     * @var resource
      */
     private $error;
 
     /**
-     * @param int             $code
-     * @param StreamInterface $output
-     * @param StreamInterface $error
+     * @param int      $code
+     * @param resource $output
+     * @param resource $error
      */
-    public function __construct(int $code, StreamInterface $output, StreamInterface $error)
+    public function __construct(int $code, $output, $error)
     {
         $this->code   = $code;
         $this->output = $output;
         $this->error  = $error;
+
+        fseek($this->output, 0);
+        fseek($this->error, 0);
     }
 
     /**
@@ -42,18 +43,30 @@ class Result
     }
 
     /**
-     * @return StreamInterface
+     * @param bool $asString
+     *
+     * @return resource|string
      */
-    public function getOutput(): StreamInterface
+    public function getOutput(bool $asString = true)
     {
+        if ($asString) {
+            return (string) stream_get_contents($this->output);
+        }
+
         return $this->output;
     }
 
     /**
-     * @return StreamInterface
+     * @param bool $asString
+     *
+     * @return resource|string
      */
-    public function getError(): StreamInterface
+    public function getError(bool $asString = true)
     {
+        if ($asString) {
+            return (string) stream_get_contents($this->error);
+        }
+
         return $this->error;
     }
 
