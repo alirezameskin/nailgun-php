@@ -68,6 +68,10 @@ class Client implements ClientInterface
             $this->connection->write(Message::environment($key, $value));
         }
 
+        foreach ($options->getArguments() as $arg) {
+            $this->connection->write(Message::arguments($arg));
+        }
+
         $this->connection->write(Message::directory($options->getCurrentDirectory()));
         $this->connection->write(Message::command($command));
 

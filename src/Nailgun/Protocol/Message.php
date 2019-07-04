@@ -92,4 +92,14 @@ class Message
     {
         return self::build("$key=$value", Header::ENVIRONMENT);
     }
+
+    /**
+     * @param string $argument
+     *
+     * @return Message
+     */
+    public static function arguments(string $argument): self
+    {
+        return self::build($argument, Header::ARGUMENT);
+    }
 }

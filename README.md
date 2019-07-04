@@ -67,11 +67,12 @@ $options = [
     'output'       => fopen("file:///tmp/output", "a+"),
     'error'        => fopen("file:///tmp/error", "a+"),
     'directory'    => '/home/alireza/projects/',
+    'arguments'    => ['arg1', 'arg2', 'arg3'],
     'environments' => [
         'HOME' => '/home/alireza'
     ],
 ];
-$result = $client->run("com.facebook.nailgun.examples.HelloWorld", $options);
+$result = $client->run("com.facebook.nailgun.examples.DumpAll", $options);
 $client->disconnect();
 
 echo $result->getExitCode();

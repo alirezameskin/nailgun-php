@@ -10,6 +10,11 @@ interface OptionsInterface
     public function getEnvironments(): array;
 
     /**
+     * @return string[]
+     */
+    public function getArguments(): array;
+
+    /**
      * @return string
      */
     public function getCurrentDirectory(): string;

@@ -7,7 +7,12 @@ class Options implements OptionsInterface
     /**
      * @var array
      */
-    private $environments;
+    private $environments = [];
+
+    /**
+     * @var string[]
+     */
+    private $arguments = [];
 
     /**
      * @var string
@@ -38,6 +43,14 @@ class Options implements OptionsInterface
 
         if (isset($options['environments'])) {
             $this->environments = array_merge($this->environments, $options['environments']);
+        }
+
+        if (isset($options['arguments'])) {
+            if (!is_array($options['arguments'])) {
+                $this->arguments = [$options['arguments']];
+            } else {
+                $this->arguments = $options['arguments'];
+            }
         }
 
         if (isset($options['directory'])) {
@@ -79,6 +92,14 @@ class Options implements OptionsInterface
     public function getEnvironments(): array
     {
         return $this->environments;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArguments(): array
+    {
+        return $this->arguments;
     }
 
     /**
