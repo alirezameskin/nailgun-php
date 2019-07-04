@@ -5,7 +5,7 @@ A php Nailgun client API.
 The Nailgun client API lets you run java code in Nailgun directly from PHP.
 
 ![PHP from Packagist (specify version)](https://img.shields.io/packagist/php-v/meskin/nailgun-php/dev-master.svg)
-[![Build Status](https://travis-ci.com/alirezameskin/phony.svg?branch=master)](https://travis-ci.com/alirezameskin/phony)
+[![Build Status](https://travis-ci.com/alirezameskin/nailgun-php.svg?branch=master)](https://travis-ci.com/alirezameskin/nailgun-php)
 [![codecov](https://codecov.io/gh/alirezameskin/nailgun-php/branch/master/graph/badge.svg)](https://codecov.io/gh/alirezameskin/nailgun-php)
 
 ## Install

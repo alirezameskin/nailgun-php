@@ -80,9 +80,9 @@ class OptionsTest extends TestCase
     public function testGetOutputStreamDefault()
     {
         $options = new Options([]);
-        $stream  = $options->getOutputStream();
+        $stream  = $options->getOutputStream(false);
 
-        $this->assertIsResource($stream);
+        $this->assertInternalType('resource', $options->getOutputStream());
     }
 
     /**
@@ -91,9 +91,7 @@ class OptionsTest extends TestCase
     public function testGetErrorStreamDefault()
     {
         $options = new Options([]);
-        $stream  = $options->getOutputStream();
-
-        $this->assertIsResource($stream);
+        $this->assertInternalType('resource', $options->getOutputStream());
     }
 
     /**
