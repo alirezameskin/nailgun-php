@@ -4,7 +4,6 @@ namespace Nailgun\Tests\Protocol;
 
 use Nailgun\Protocol\Result;
 use PHPStan\Testing\TestCase;
-use Psr\Http\Message\StreamInterface;
 
 class ResultTest extends TestCase
 {
@@ -15,8 +14,8 @@ class ResultTest extends TestCase
     {
         $result = new Result(
             1001,
-            $this->prophesize(StreamInterface::class)->reveal(),
-            $this->prophesize(StreamInterface::class)->reveal()
+            fopen("php://memory", "rw"),
+            fopen("php://memory", "rw")
         );
 
         $this->assertEquals(1001, $result->getExitCode());
@@ -29,16 +28,16 @@ class ResultTest extends TestCase
     {
         $result = new Result(
             0,
-            $this->prophesize(StreamInterface::class)->reveal(),
-            $this->prophesize(StreamInterface::class)->reveal()
+            fopen("php://memory", "rw"),
+            fopen("php://memory", "rw")
         );
 
         $this->assertTrue($result->successful());
 
         $result = new Result(
             10,
-            $this->prophesize(StreamInterface::class)->reveal(),
-            $this->prophesize(StreamInterface::class)->reveal()
+            fopen("php://memory", "rw"),
+            fopen("php://memory", "rw")
         );
 
         $this->assertFalse($result->successful());
@@ -49,11 +48,11 @@ class ResultTest extends TestCase
      */
     public function testGetOutputAndError()
     {
-        $error  = $this->prophesize(StreamInterface::class)->reveal();
-        $output = $this->prophesize(StreamInterface::class)->reveal();
+        $output = fopen("php://memory", "rw");
+        $error  = fopen("php://memory", "rw");
         $result = new Result(0, $output, $error);
 
-        $this->assertEquals($output, $result->getOutput());
-        $this->assertEquals($error, $result->getError());
+        $this->assertEquals($output, $result->getOutput(false));
+        $this->assertEquals($error, $result->getError(false));
     }
 }

@@ -4,7 +4,6 @@ namespace Nailgun\Tests\Configuration;
 
 use Nailgun\Configuration\Options;
 use PHPStan\Testing\TestCase;
-use Psr\Http\Message\StreamInterface;
 
 class OptionsTest extends TestCase
 {
@@ -83,7 +82,7 @@ class OptionsTest extends TestCase
         $options = new Options([]);
         $stream  = $options->getOutputStream();
 
-        $this->assertInstanceOf(StreamInterface::class, $stream);
+        $this->assertIsResource($stream);
     }
 
     /**
@@ -94,7 +93,7 @@ class OptionsTest extends TestCase
         $options = new Options([]);
         $stream  = $options->getOutputStream();
 
-        $this->assertInstanceOf(StreamInterface::class, $stream);
+        $this->assertIsResource($stream);
     }
 
     /**
@@ -102,7 +101,7 @@ class OptionsTest extends TestCase
      */
     public function testGetOutputStream()
     {
-        $stream  = $this->prophesize(StreamInterface::class)->reveal();
+        $stream  = fopen("php://memory", "rw");
         $options = new Options(['output' => $stream]);
 
         $this->assertEquals($stream, $options->getOutputStream());
@@ -116,7 +115,7 @@ class OptionsTest extends TestCase
      */
     public function testGetErrorStream()
     {
-        $stream  = $this->prophesize(StreamInterface::class)->reveal();
+        $stream  = fopen("php://memory", "rw");
         $options = new Options(['error' => $stream]);
 
         $this->assertEquals($stream, $options->getErrorStream());
