@@ -70,7 +70,7 @@ $options = [
 $result = $client->run("com.facebook.nailgun.examples.Hash", $options);
 $client->disconnect();
 
-print 'Exit Code : ' . $result->getExitCode() . PHP_EOL;
+print 'Hash : ' . $result->getOutput() . PHP_EOL;
 
 ```
 
