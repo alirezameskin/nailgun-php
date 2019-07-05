@@ -102,4 +102,22 @@ class Message
     {
         return self::build($argument, Header::ARGUMENT);
     }
+
+    /**
+     * @param string $content
+     *
+     * @return Message
+     */
+    public static function input(string $content): self
+    {
+        return self::build($content, Header::STDIN);
+    }
+
+    /**
+     * @return Message
+     */
+    public static function endInput(): self
+    {
+        return self::build("", Header::STD_IN_EOF);
+    }
 }

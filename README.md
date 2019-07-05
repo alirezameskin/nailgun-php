@@ -56,6 +56,25 @@ print 'Exit Code : ' . $result->getExitCode() . PHP_EOL;
 ```
 
 ```php
+<?php
+
+require "./vendor/autoload.php";
+
+$client = new Nailgun\Client();
+$client->connect('127.0.0.1', 2113);
+
+$options = [
+    'input'     => fopen("file:///tmp/input", "r"), // OR "String"
+    'arguments' => ['MD5'],
+];
+$result = $client->run("com.facebook.nailgun.examples.Hash", $options);
+$client->disconnect();
+
+print 'Exit Code : ' . $result->getExitCode() . PHP_EOL;
+
+```
+
+```php
 
 <?php
 require "./vendor/autoload.php";

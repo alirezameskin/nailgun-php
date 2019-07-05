@@ -30,6 +30,11 @@ class Options implements OptionsInterface
     private $errorStream;
 
     /**
+     * @var resource|null
+     */
+    private $inputStream;
+
+    /**
      * @param array $options
      *
      * @throws \Exception
@@ -43,6 +48,16 @@ class Options implements OptionsInterface
 
         if (isset($options['environments'])) {
             $this->environments = array_merge($this->environments, $options['environments']);
+        }
+
+        if (isset($options['input'])) {
+            if (is_resource($options['input'])) {
+                $this->inputStream = $options['input'];
+            } else {
+                $this->inputStream = fopen("php://temp", "rw");
+                fwrite($this->inputStream, (string) $options['input']);
+                fseek($this->inputStream, 0);
+            }
         }
 
         if (isset($options['arguments'])) {
@@ -125,6 +140,14 @@ class Options implements OptionsInterface
     public function getErrorStream()
     {
         return $this->errorStream;
+    }
+
+    /**
+     * @return resource|null
+     */
+    public function getInputStream()
+    {
+        return $this->inputStream;
     }
 
     /**

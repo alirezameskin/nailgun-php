@@ -20,6 +20,11 @@ interface OptionsInterface
     public function getCurrentDirectory(): string;
 
     /**
+     * @return resource|null
+     */
+    public function getInputStream();
+
+    /**
      * @return resource
      */
     public function getOutputStream();

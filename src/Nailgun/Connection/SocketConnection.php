@@ -5,7 +5,6 @@ namespace Nailgun\Connection;
 use Nailgun\Exception\ConnectionException;
 use Nailgun\Protocol\Header;
 use Nailgun\Protocol\Message;
-use Psr\Http\Message\StreamInterface;
 
 class SocketConnection implements ConnectionInterface
 {

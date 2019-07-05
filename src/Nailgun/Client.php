@@ -75,8 +75,20 @@ class Client implements ClientInterface
         $this->connection->write(Message::directory($options->getCurrentDirectory()));
         $this->connection->write(Message::command($command));
 
-        $output   = $options->getOutputStream();
-        $error    = $options->getErrorStream();
+        $input   = $options->getInputStream();
+        $output  = $options->getOutputStream();
+        $error   = $options->getErrorStream();
+
+        if (null !== $input) {
+            while (!feof($input)) {
+                $content = fread($input, 1024);
+
+                $this->connection->write(Message::input($content));
+            }
+
+            $this->connection->write(Message::endInput());
+        }
+
         $exitCode = $this->connection->stream($output, $error);
 
         return new Result($exitCode, $output, $error);
