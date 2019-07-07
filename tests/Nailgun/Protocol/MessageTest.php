@@ -101,4 +101,48 @@ class MessageTest extends TestCase
         $this->assertEquals(Header::ARGUMENT, $message->getHeader()->getType());
         $this->assertEquals(strlen($content), $message->getHeader()->getLength());
     }
+
+    /**
+     * @group protocol
+     */
+    public function testArgument()
+    {
+        $argument = "argument-1";
+        $message  = Message::argument($argument);
+
+        $this->assertInstanceOf(Message::class, $message);
+        $this->assertEquals($argument, $message->getMessage());
+        $this->assertInstanceOf(Header::class, $message->getHeader());
+        $this->assertEquals(Header::ARGUMENT, $message->getHeader()->getType());
+        $this->assertEquals(strlen($argument), $message->getHeader()->getLength());
+    }
+
+    /**
+     * @group protocol
+     */
+    public function testInput()
+    {
+        $input   = "example input string";
+        $message = Message::input($input);
+
+        $this->assertInstanceOf(Message::class, $message);
+        $this->assertEquals($input, $message->getMessage());
+        $this->assertInstanceOf(Header::class, $message->getHeader());
+        $this->assertEquals(Header::STDIN, $message->getHeader()->getType());
+        $this->assertEquals(strlen($input), $message->getHeader()->getLength());
+    }
+
+    /**
+     * @group protocol
+     */
+    public function testEndInput()
+    {
+        $message = Message::endInput();
+
+        $this->assertInstanceOf(Message::class, $message);
+        $this->assertEquals("", $message->getMessage());
+        $this->assertInstanceOf(Header::class, $message->getHeader());
+        $this->assertEquals(Header::STDIN_EOF, $message->getHeader()->getType());
+        $this->assertEquals(0, $message->getHeader()->getLength());
+    }
 }

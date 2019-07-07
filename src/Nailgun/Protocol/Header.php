@@ -15,9 +15,9 @@ class Header
     const LONG_ARG    = 'L';
     const SEND_INPUT  = 'S';
     const STDIN       = '0';
-    const STD_OUT     = '1';
-    const STD_ERR     = '2';
-    const STD_IN_EOF  = '.';
+    const STDOUT      = '1';
+    const STDERR      = '2';
+    const STDIN_EOF   = '.';
 
     /**
      * @var string

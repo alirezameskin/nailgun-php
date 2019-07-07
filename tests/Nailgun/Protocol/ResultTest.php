@@ -55,4 +55,23 @@ class ResultTest extends TestCase
         $this->assertEquals($output, $result->getOutput(false));
         $this->assertEquals($error, $result->getError(false));
     }
+
+    /**
+     * @group protocol
+     */
+    public function testGetOutputAndErrorAsString()
+    {
+        $output = fopen("php://temp", "rw");
+        $error  = fopen("php://temp", "rw");
+
+        fwrite($output, "Standard Output");
+        fwrite($error, "Standard Error");
+        rewind($output);
+        rewind($error);
+
+        $result = new Result(0, $output, $error);
+
+        $this->assertEquals("Standard Output", $result->getOutput(true));
+        $this->assertEquals("Standard Error", $result->getError(true));
+    }
 }

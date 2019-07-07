@@ -98,7 +98,7 @@ class Message
      *
      * @return Message
      */
-    public static function arguments(string $argument): self
+    public static function argument(string $argument): self
     {
         return self::build($argument, Header::ARGUMENT);
     }
@@ -118,6 +118,6 @@ class Message
      */
     public static function endInput(): self
     {
-        return self::build("", Header::STD_IN_EOF);
+        return self::build("", Header::STDIN_EOF);
     }
 }

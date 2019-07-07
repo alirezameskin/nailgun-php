@@ -49,6 +49,22 @@ class OptionsTest extends TestCase
     /**
      * @group configuration
      */
+    public function testGetArguments()
+    {
+        $options = new Options(['arguments' => ["Argument1", "Argument2"]]);
+        $arguments = $options->getArguments();
+
+        $this->assertEquals(['Argument1', 'Argument2'], $arguments);
+
+        $options = new Options(['arguments' => "SingleArgument"]);
+        $arguments = $options->getArguments();
+
+        $this->assertEquals(['SingleArgument'], $arguments);
+    }
+
+    /**
+     * @group configuration
+     */
     public function testGetCurrentDirectory()
     {
         $options   = new Options([]);
@@ -99,7 +115,7 @@ class OptionsTest extends TestCase
      */
     public function testGetOutputStream()
     {
-        $stream  = fopen("php://memory", "rw");
+        $stream  = fopen("php://memory", "r+");
         $options = new Options(['output' => $stream]);
 
         $this->assertEquals($stream, $options->getOutputStream());
@@ -113,12 +129,27 @@ class OptionsTest extends TestCase
      */
     public function testGetErrorStream()
     {
-        $stream  = fopen("php://memory", "rw");
+        $stream  = fopen("php://memory", "r+");
         $options = new Options(['error' => $stream]);
 
         $this->assertEquals($stream, $options->getErrorStream());
 
         $this->expectException(\InvalidArgumentException::class);
         new Options(['error' => "invalid data"]);
+    }
+
+    /**
+     * @group configuration
+     */
+    public function testGetInputStream()
+    {
+        $stream  = fopen("php://temp", "r+");
+        $options = new Options(['input' => $stream]);
+
+        $this->assertEquals($stream, $options->getInputStream());
+
+        $options = new Options(['input' => "sample input data"]);
+        $this->assertInternalType("resource", $options->getInputStream());
+        $this->assertEquals("sample input data", stream_get_contents($options->getInputStream()));
     }
 }

@@ -96,11 +96,11 @@ class SocketConnection implements ConnectionInterface
             }
 
             switch ($header->getType()) {
-                case Header::STD_ERR:
+                case Header::STDERR:
                     fwrite($stderr, $this->read($header->getLength()));
                     break;
 
-                case Header::STD_OUT:
+                case Header::STDOUT:
                     fwrite($stdout, $this->read($header->getLength()));
                     break;
 

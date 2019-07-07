@@ -24,14 +24,19 @@ class Client implements ClientInterface
     protected $connectionFactory;
 
     /**
+     * @var bool
+     */
+    protected $connected = false;
+
+    /**
      * @param FactoryInterface|null $factory
      */
     public function __construct(FactoryInterface $factory = null)
     {
-        $this->connectionFactory = $factory;
-
         if (null === $factory) {
             $this->connectionFactory = new Factory();
+        } else {
+            $this->connectionFactory = $factory;
         }
     }
 
@@ -45,6 +50,7 @@ class Client implements ClientInterface
         }
 
         $this->connection->connect();
+        $this->connected = true;
     }
 
     /**
@@ -58,18 +64,20 @@ class Client implements ClientInterface
     /**
      * {@inheritDoc}
      */
-    public function run(string $command, array $options = []): Result
+    public function run(string $command, $options = []): Result
     {
-        $options = $this->createOptions($options);
+        if (!$this->connected) {
+            throw new \RuntimeException("Firstly, connect method should be called");
+        }
 
-        $this->connect();
+        $options = $this->createOptions($options);
 
         foreach ($options->getEnvironments() as $key => $value) {
             $this->connection->write(Message::environment($key, $value));
         }
 
         foreach ($options->getArguments() as $arg) {
-            $this->connection->write(Message::arguments($arg));
+            $this->connection->write(Message::argument($arg));
         }
 
         $this->connection->write(Message::directory($options->getCurrentDirectory()));
@@ -81,9 +89,11 @@ class Client implements ClientInterface
 
         if (null !== $input) {
             while (!feof($input)) {
-                $content = fread($input, 1024);
+                $content = fread($input, 2048);
 
-                $this->connection->write(Message::input($content));
+                if (!empty($content)) {
+                    $this->connection->write(Message::input($content));
+                }
             }
 
             $this->connection->write(Message::endInput());
