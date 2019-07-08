@@ -36,6 +36,7 @@ if ($result->successful()) {
 }
 ```
 
+
 ```php
 <?php
 
@@ -55,6 +56,7 @@ print 'Exit Code : ' . $result->getExitCode() . PHP_EOL;
 
 ```
 
+
 ```php
 <?php
 
@@ -73,6 +75,7 @@ $client->disconnect();
 print 'Hash : ' . $result->getOutput() . PHP_EOL;
 
 ```
+
 
 ```php
 
@@ -97,3 +100,4 @@ $client->disconnect();
 echo $result->getExitCode();
 
 ```
+
