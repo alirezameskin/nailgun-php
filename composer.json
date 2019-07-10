@@ -1,5 +1,6 @@
 {
     "name": "meskin/nailgun-php",
+    "vesion": "0.1.0",
     "description": "A PHP Nailgun client",
     "type": "library",
     "license": "Apache-2.0",
