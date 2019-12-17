@@ -1,0 +1,23 @@
+name: PHP Composer
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest --dev
+
+    - name: Run test suite
+      run: vendor/bin/phpunit --coverage-clover=coverage.xml
+    
+    - name: Code Coverage
+      run: bash <(curl -s https://codecov.io/bash)
